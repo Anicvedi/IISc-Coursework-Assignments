@@ -1,0 +1,3 @@
+@echo off
+echo Opening 180nm CMOS Inverter Schematic in Xschem GUI...
+wsl.exe -d Ubuntu -e bash -c "cd /home/anirudh/Analog_VLSI_Projects/01_CMOS_Inverter && xschem /home/anirudh/Analog_VLSI_Projects/01_CMOS_Inverter/cmos_inverter.sch"
