@@ -1,0 +1,34 @@
+# Vivado, Simulation & EDA Artifacts
+*.vcd
+*.wdb
+*.vvp
+*.jou
+*.log
+.Xil/
+xsim.dir/
+xsim.jou
+xsim.log
+xvlog.log
+xvlog.pb
+xelab.log
+xelab.pb
+sim
+sim.out
+
+# Standard cell library large files
+*.lib
+
+# LaTeX intermediate build files
+*.aux
+*.out
+*.toc
+*.synctex.gz
+*.fls
+*.fdb_latexmk
+
+# System files
+.DS_Store
+Thumbs.db
+*.swp
+*~
+.vscode/
