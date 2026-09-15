@@ -1,0 +1,16 @@
+read_verilog AES_SBOX.v
+read_verilog AES256.v
+chparam -set SBOX_TYPE 1 AES256
+hierarchy -check -top AES256
+flatten
+
+proc; opt; fsm; opt; memory; opt
+techmap; opt
+
+dfflibmap -liberty NangateOpenCellLibrary_typical.lib
+abc -liberty NangateOpenCellLibrary_typical.lib
+
+opt_clean -purge
+
+stat -liberty NangateOpenCellLibrary_typical.lib
+write_verilog -noexpr -noattr synth_canright.v
