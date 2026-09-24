@@ -1,0 +1,110 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[margin=0.9in]{geometry}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath,amssymb}
+\usepackage{enumitem}
+\usepackage{xcolor}
+
+\definecolor{iiscblue}{RGB}{0, 51, 102}
+
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{5pt}
+
+\begin{document}
+
+\begin{center}
+    {\Large\bfseries\color{iiscblue} E0 297: Cryptographic Hardware Accelerators}\\[3pt]
+    {\large\bfseries Paper Review Presentation Script}\\[3pt]
+    {\normalsize Instructor: Prof. Utsav Banerjee \quad$\vert$\quad Indian Institute of Science (IISc)}\\[5pt]
+    \hrule height 1.2pt
+\end{center}
+
+\vspace{0.2em}
+\noindent\textbf{Reviewer:} Anirudh \hfill \textbf{Track:} Track 2 (SHA2 / SHA3 Accelerators) \\
+\textbf{Paper:} \textit{18Gbps, 50mW Reconfigurable Multi-Mode SHA Hashing Accelerator in 45nm CMOS} \\
+\textbf{Authors \& Venue:} R. Ramanarayanan et al., \textit{IEEE ISSCC 2010} \hfill \textbf{Duration:} $\sim$3.5--4 Minutes
+
+\vspace{0.5em}
+\hrule
+\vspace{0.5em}
+
+{\large\bfseries\color{iiscblue} 1. Introduction \& Problem Formulation \hfill \normalfont\small\itshape $\sim$45 seconds}
+
+\vspace{0.2em}
+``Good morning / afternoon, sir and everyone.
+
+Today I am presenting my review of the paper \textbf{`18Gbps, 50mW Reconfigurable Multi-Mode SHA Hashing Accelerator in 45nm CMOS'}, authored by Ramanarayanan et al. from Intel Labs and presented at ISSCC 2010.
+
+The fundamental design challenge this work addresses is \textbf{hardware reconfigurability for secure hashing}. Security protocols like IPsec and TLS require support across multiple standards: SHA-1, SHA-224, SHA-256, SHA-384, and SHA-512. Traditionally, hardware designers either implement separate, dedicated datapaths for each algorithm---which incurs huge silicon area overhead---or resort to microcoded firmware, which lacks line-rate throughput.
+
+The authors overcome this tradeoff by proposing a \textbf{single, unified 64-bit bitslice datapath} in 45nm CMOS that supports all five SHA variants using just three configuration bits ($m[2:0]$). Fabricated on silicon, the chip hits \textbf{1.4~GHz} at 1.1~V, delivering \textbf{18 to 23~Gbps} of throughput at only \textbf{50~mW}, achieving approximately \textbf{40\% area reduction} compared to dedicated engines with under 3\% reconfiguration delay penalty.''
+
+\vspace{0.7em}
+\hrule
+\vspace{0.5em}
+
+{\large\bfseries\color{iiscblue} 2. Key Architectural Strengths \hfill \normalfont\small\itshape $\sim$1.5 minutes}
+
+\vspace{0.2em}
+``When evaluating the design against our course concepts, three architectural strengths stand out:
+
+\textbf{1. Unified Bit-Slice and Cross-Algorithm Register Reuse:} \\
+Both SHA-1 and SHA-2 belong to the Merkle--Damg{\aa}rd family, relying on round-based iterative compression. However, SHA-1 operates on a 5-word 32-bit state, whereas SHA-2 operates on an 8-word state of either 32-bit or 64-bit width. The authors observed that SHA-1's critical multi-operand update for register $A$ mirrors the 6-operand addition tree of SHA-2's register $E$. 
+
+Consequently, they mapped SHA-1 registers $\{A, B, C, D, E\}$ directly onto SHA-2 circuits $\{E, D, F, G, H\}$, gating off SHA-2 circuits $A, B$, and $C$. Furthermore, SHA-1's 30-bit left rotate is mapped natively as a 2-bit right rotate ($\text{ROTL}^{30} \equiv \text{ROTR}^2$), eliminating dedicated rotation logic. This allows near-total adder reuse with negligible muxing delay.
+
+\textbf{2. Four-Stage Carry-Save Compressor Tree:} \\
+In SHA-2, updating state register $A$ requires summing 8 operands in a single cycle: $K_t, W_t, h, Ch, \Sigma_1, d, \Sigma_0$, and $Maj$. Cascading standard carry-propagate adders sequentially would severely limit the clock frequency. The authors maintain intermediate sums in redundant carry-save representation through \textbf{four stages of 3:2 compressors}. Carry propagation is deferred to the very end of the cycle, executed once by a dual 64-bit adder pair for $A$ and $E$, enabling a 1.4~GHz clock.
+
+\textbf{3. Bit-32 Carry-Kill and Dual-Stream Parallelism:} \\
+In 32-bit modes (SHA-1/224/256), a 64-bit datapath would ordinarily suffer 50\% underutilization. By inserting a \textbf{carry-kill gate at bit~32}, the 64-bit datapath splits cleanly into two independent 32-bit lanes. This enables processing two independent hash blocks concurrently, doubling throughput to 23~Gbps without duplicate compute resources, while clock-gating unused register file partitions saves dynamic power.''
+
+\vspace{0.7em}
+\hrule
+\vspace{0.5em}
+
+{\large\bfseries\color{iiscblue} 3. Critical Shortcomings \& Weaknesses \hfill \normalfont\small\itshape $\sim$1 minute}
+
+\vspace{0.2em}
+``However, looking at the design critically from an end-to-end accelerator perspective:
+
+\textbf{1. The Message Expansion Scheduler is Excluded:} \\
+The reported area ($0.0625\text{ mm}^2$) and power ($50\text{ mW}$) cover only the compression core. The message scheduler, which expands 16 message words into 64 or 80 schedule words using shifts, XORs, and modular adders, is left out. In real-world systems and Bitcoin mining ASICs where energy-per-hash across the entire chip is the governing metric, omitting the scheduler paints an incomplete picture of system efficiency.
+
+\textbf{2. Carry-Propagate Adders Bottleneck Low-Voltage Scaling:} \\
+Even with carry-save trees, the two 64-bit carry-propagate adders at the output stage remain on the critical path. As supply voltage scales into the near-threshold regime for ultra-low-power IoT applications, carry-chain delay degrades rapidly. The authors' own measurements show $F_{\max}$ collapsing from 1.4~GHz down to \textbf{21~MHz at 320~mV}, demonstrating that this design cannot operate efficiently near threshold.
+
+\textbf{3. Incompatibility with Modern Sponge Ciphers:} \\
+The core is specialized for Merkle--Damg{\aa}rd modular arithmetic. It cannot support modern lightweight or post-quantum hash standards like SHA-3 (Keccak) or ASCON, which rely on wide-state (1600-bit or 320-bit) bitwise permutations without modular additions. Although reasonable for a 2010 publication, the hardware cannot adapt to modern sponge cryptography.''
+
+\vspace{0.7em}
+\hrule
+\vspace{0.5em}
+
+{\large\bfseries\color{iiscblue} 4. Conclusion \& Recommendation \hfill \normalfont\small\itshape $\sim$30 seconds}
+
+\vspace{0.2em}
+``To conclude:
+\begin{itemize}[leftmargin=1.5em, itemsep=2pt]
+    \item \textbf{Reviewer Confidence: Medium.} I fully comprehend the datapath mapping, compressor sizing, and architectural tradeoffs, though I have not replicated the 45nm layout simulations.
+    \item \textbf{Overall Rating: Good.} The paper demonstrates genuine silicon innovation in unified bitslice design and high-frequency CSA trees, balanced by practical omissions in message scheduling and near-threshold scaling.
+\end{itemize}
+Thank you. I am happy to take any questions or discuss further.''
+
+\vspace{0.8em}
+\hrule height 1pt
+\vspace{0.5em}
+
+{\large\bfseries\color{iiscblue} Quick Q\&A Defense Sheet}
+
+\vspace{0.2em}
+\begin{itemize}[leftmargin=1.5em, itemsep=4pt]
+    \item \textbf{Q: Why map SHA-1's $A$ to SHA-2's $E$ instead of $A$?} \\
+    \textit{Defense:} SHA-1 register $A$ needs a 5-operand modular sum ($A + f + E + K_t + W_t$). SHA-2 register $E$ has a matching multi-operand adder tree ($d + h + \Sigma_1 + Ch + K_t + W_t$). Mapping SHA-1 $A \to E$ reuses the existing compressor hardware rather than creating new paths.
+    \item \textbf{Q: Why does the paper count 8 operands in SHA-2?} \\
+    \textit{Defense:} In SHA-2, $A_{new} = T_1 + T_2$ where $T_1 = h + \Sigma_1(e) + Ch(e,f,g) + K_t + W_t$ (5 operands) and $T_2 = \Sigma_0(a) + Maj(a,b,c)$ (2 operands). Together with forwarding $d$ for register $E$, the tree condenses 8 operands in total before the final CPAs.
+    \item \textbf{Q: What is the left-rotate conversion trick?} \\
+    \textit{Defense:} In a 32-bit register, a 30-bit circular left shift is identical to a 2-bit circular right shift ($\text{ROTL}^{30} \equiv \text{ROTR}^{32-30} = \text{ROTR}^2$). Because SHA-2 already implements right-rotators ($\Sigma_0, \Sigma_1$), the datapath reuses right-rotation routing directly.
+\end{itemize}
+
+\end{document}

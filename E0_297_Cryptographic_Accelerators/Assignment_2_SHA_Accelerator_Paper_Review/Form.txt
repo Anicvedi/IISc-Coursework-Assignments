@@ -1,0 +1,78 @@
+Hi, Anirudh. When you submit this form, the owner will see your name and email address.
+Required
+1.Paper Review Track (select the track you have been assigned to)
+(1 Point)
+
+Track 1: AES Hardware Accelerators
+
+[X] Track 2: SHA2 / SHA3 Hardware Accelerators
+
+Track 3: ASCON Hardware Accelerators
+
+Track 4: Physical-Attack-Resilient Crypto Building Blocks
+
+2.Paper Title (from the list, select the paper which you have reviewed)
+(1 Point)
+
+T1 P1 - Design and Implementation of Low-Area and Low-Power AES Encryption Hardware Core
+
+T1 P2 - A 275 Gbps AES Encryption Accelerator using ROM-based S-boxes in 65nm
+
+T1 P3 - A 10pJ/bit 256b AES-SoC Exploiting Memory Access Acceleration
+
+[X] T2 P1 - 18Gbps, 50mW Reconfigurable Multi-Mode SHA Hashing Accelerator in 45nm CMOS
+
+T2 P2 - A New High Throughput and Area Efficient SHA-3 Implementation
+
+T2 P3 - SHINE: A Novel SHA-3 Implementation Using ReRAM-based In-Memory Computing
+
+T3 P1 - Suit up! -- Made-to-Measure Hardware Implementations of ASCON
+
+T3 P2 - ASIC Implementation of ASCON Lightweight Cryptography for IoT Applications
+
+T3 P3 - A Compute-in-Memory Ascon Implementation Based on a Novel 11T SRAM Processing Macro
+
+T4 P1 - A Dynamic and Differential CMOS Logic with Signal Independent Power Consumption to Withstand Differential Power Analysis on Smart Cards
+
+T4 P2 - A Logic Level Design Methodology for a Secure DPA Resistant ASIC or FPGA Implementation
+
+T4 P3 - A 1.25pJ/bit 0.048mm2 AES core with DPA Resistance for IoT Devices
+
+3.Paper Summary (succinct overview of the paper in 150-200 words; do not copy directly from paper abstract and/or conclusion; write in your words based on your understanding and analysis of the paper)
+(2 Points)
+
+This paper is about a reconfigurable SHA accelerator in 45nm CMOS that runs SHA-1, SHA-224, SHA-256, SHA-384, and SHA-512 all on one shared datapath. Since all five follow the Merkle-Damgard construction — iterative compression with modular additions, rotations, and boolean functions like Ch, Maj, and Parity — the authors exploit this similarity to map SHA-1's 5-register state (A-E) onto SHA-2's datapath — specifically, SHA-1 registers A through E land on SHA-2 registers E, D, F, G, H respectively — reusing the E-computation logic for SHA-1's A register and converting the 30-bit left rotate into a 2-bit right rotate itself. The big timing problem is that the round function has too many cascaded adders, so they use four stages of 3:2 carry-save compressors and defer all carry propagation to a final pair of 64-bit adders at the cycle end only. On top of this, a carry-kill at bit 32 lets the datapath split into two independent 32-bit lanes for shorter-word modes, giving 2x throughput. Chip runs at 1.4 GHz with 18-23 Gbps throughput at 50 mW, and area is 40% less than having separate datapaths.
+
+4.Strengths (3 strengths of the research; include 2-3 sentences for each point to justify why you think it is a strength / novelty)
+(3 Points)
+
+1. What they have done with the unified bit-slice is quite clever — SHA-1 and SHA-2 both use Merkle-Damgard, so by carefully mapping SHA-1's registers onto SHA-2's datapath (SHA-1 A→SHA-2 E, B→D, C→F, D→G, E→H), almost all adder and compression logic gets reused across all five modes, giving 40% area savings with only about 3% extra delay from the reconfiguration muxes. In AES hardware also we share encrypt/decrypt logic, but that is within the same algorithm; here they are sharing across algorithms with different word widths and different number of state registers, which is a harder problem to solve.
+
+2. Carry-save arithmetic is what makes 1.4 GHz achievable here — the A-register update in SHA-2 requires adding 8 operands (Kt, Wt, h, Ch, Σ1, d, Σ0, Maj), and if you try to do this with normal carry-propagate adders sequentially, the critical path becomes too long for any practical clock rate. So what they do is keep everything in redundant carry-save form through four 3:2 compressor stages, and carry propagation happens only once at the output via the 64-bit adder pair, which is how they avoid that timing bottleneck entirely.
+
+3. The carry-kill at bit 32 is a nice idea, by killing carry propagation at the word boundary, both halves of the 64-bit datapath become independent and can process two separate 32-bit hashes simultaneously, doubling throughput without any extra compute hardware. Clock-gating of unused register file entries in these modes also helps, because register file power is not small in parallel designs it itself can be a significant fraction of total dynamic power.
+
+5.Weaknesses (3 weaknesses of the research; include 2-3 sentences for each point to justify why you think it is a weakness / shortcoming)
+(3 Points)
+
+1. The area (0.0625 mm2) and power (50 mW) numbers they report are for compression core only — message scheduler is not counted at all. Scheduler needs its own hardware to expand 16 input words to 64 or 80 schedule words using shifts, XORs, and modular additions, plus storage is required for those intermediate values. For applications like Bitcoin mining where entire SHA-256 engine must sit on-chip and energy-per-hash is the only metric that matters, these reported numbers do not give the complete picture.
+
+2. Even after all the carry-save optimization, at end of every cycle there are still two full 64-bit carry-propagate adders sitting on critical path to convert A and E back to binary, this itself is the frequency bottleneck. Paper's own measurements show Fmax falling to 21 MHz at 320 mV, so adder delay dominates at low voltage, which is a problem because IoT devices need to run near-threshold for energy efficiency and this design clearly cannot do that.
+
+3. Architecture is designed only for Merkle-Damgard, it simply cannot support SHA-3 or ASCON, which use sponge construction with purely bitwise permutations on wide states (1600-bit Keccak, 320-bit ASCON state) and no modular additions at all. To be fair, paper came out before SHA-3 standardization, so it was not a concern then, but at this point the design is locked to SHA-1 and SHA-2 only with no real path forward.
+
+6.Reviewer Confidence
+
+Low
+
+[X] Medium
+
+High
+
+7.Overall Rating of the Paper
+
+Average
+
+[X] Good
+
+Very Good
