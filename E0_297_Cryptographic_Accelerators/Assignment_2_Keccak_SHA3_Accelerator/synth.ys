@@ -1,0 +1,14 @@
+read_verilog keccak_f1600.v
+hierarchy -check -top keccak_f1600
+flatten
+
+proc; opt; fsm; opt; memory; opt
+techmap; opt
+
+dfflibmap -liberty NangateOpenCellLibrary_typical.lib
+abc -liberty NangateOpenCellLibrary_typical.lib -constr abc.constr
+
+opt_clean -purge
+
+stat -liberty NangateOpenCellLibrary_typical.lib
+write_verilog -noexpr -noattr synth_keccak.v
