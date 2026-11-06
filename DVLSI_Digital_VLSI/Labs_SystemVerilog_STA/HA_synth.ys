@@ -1,0 +1,7 @@
+read_verilog -sv HA.sv
+hierarchy -check -top HA
+synth -top HA
+dfflibmap -liberty /home/anirudh/.volare/volare/sky130/versions/7519dfb04400f224f140749cda44ee7de6f5e095/sky130A/libs.ref/sky130_fd_sc_hd/lib/sky130_fd_sc_hd__tt_025C_1v80.lib
+abc -liberty /home/anirudh/.volare/volare/sky130/versions/7519dfb04400f224f140749cda44ee7de6f5e095/sky130A/libs.ref/sky130_fd_sc_hd/lib/sky130_fd_sc_hd__tt_025C_1v80.lib
+clean
+write_verilog -noattr HA_synth.v
