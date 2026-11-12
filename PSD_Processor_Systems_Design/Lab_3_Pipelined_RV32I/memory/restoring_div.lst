@@ -1,0 +1,54 @@
+; ========================================================
+; RV32I Disassembly Listing
+; ========================================================
+0x0000 [word 000]: 0x70000113    li   sp, 0x700
+0x0004 [word 001]: 0x06400513    li   a0, 100
+0x0008 [word 002]: 0x00700593    li   a1, 7
+0x000c [word 003]: 0x03c000ef    jal  ra, restoring_divide
+0x0010 [word 004]: 0x20000293    li   t0, 0x200
+0x0014 [word 005]: 0x00a2a023    sw   a0, 0(t0)
+0x0018 [word 006]: 0x00b2a223    sw   a1, 4(t0)
+0x001c [word 007]: 0x05a00393    li   t2, 0x5A
+0x0020 [word 008]: 0x007284a3    sb   t2, 9(t0)
+0x0024 [word 009]: 0x0092ce83    lbu  t4, 9(t0)
+0x0028 [word 010]: 0x0000ce37    li   t3, 0xC0DE
+0x002c [word 011]: 0x0dee0e13    li   t3, 0xC0DE
+0x0030 [word 012]: 0x01c29523    sh   t3, 10(t0)
+0x0034 [word 013]: 0x00a2df03    lhu  t5, 10(t0)
+0x0038 [word 014]: 0x0092af83    lw   t6, 9(t0)
+0x003c [word 015]: 0x001f8f93    addi t6, t6, 1
+0x0040 [word 016]: 0x01f2a823    sw   t6, 16(t0)
+0x0044 [word 017]: 0x0000006f    j    halt
+0x0048 [word 018]: 0x00050293    mv   t0, a0
+0x004c [word 019]: 0x00058313    mv   t1, a1
+0x0050 [word 020]: 0x00000393    li   t2, 0
+0x0054 [word 021]: 0x01000e13    li   t3, 16
+0x0058 [word 022]: 0x00f2de93    srli t4, t0, 15
+0x005c [word 023]: 0x001efe93    andi t4, t4, 1
+0x0060 [word 024]: 0x00139393    slli t2, t2, 1
+0x0064 [word 025]: 0x01d3e3b3    or   t2, t2, t4
+0x0068 [word 026]: 0x00129293    slli t0, t0, 1
+0x006c [word 027]: 0x0063e663    bltu t2, t1, no_sub
+0x0070 [word 028]: 0x406383b3    sub  t2, t2, t1
+0x0074 [word 029]: 0x0012e293    ori  t0, t0, 1
+0x0078 [word 030]: 0xfffe0e13    addi t3, t3, -1
+0x007c [word 031]: 0xfc0e1ee3    bne  t3, x0, div_loop
+0x0080 [word 032]: 0x01029513    slli a0, t0, 16
+0x0084 [word 033]: 0x01055513    srli a0, a0, 16
+0x0088 [word 034]: 0x01039593    slli a1, t2, 16
+0x008c [word 035]: 0x0105d593    srli a1, a1, 16
+0x0090 [word 036]: 0x00008067    ret
+0x0200 [word 128]: 0x00000000    .word 0x00000000
+0x0204 [word 129]: 0x00000000    .word 0x00000000
+0x0208 [word 130]: 0x00000000    .word 0x00000000
+0x020c [word 131]: 0x00000000    .word 0x00000000
+
+; Symbol Table:
+main                 = 0x0000
+halt                 = 0x0044
+restoring_divide     = 0x0048
+div_loop             = 0x0058
+no_sub               = 0x0078
+DATA_QUOTIENT        = 0x0200
+DATA_REMAINDER       = 0x0204
+DATA_UNALIGNED       = 0x0208
