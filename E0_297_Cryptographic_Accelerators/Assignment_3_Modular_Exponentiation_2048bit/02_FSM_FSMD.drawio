@@ -1,0 +1,119 @@
+<?xml version='1.0' encoding='utf-8'?>
+<mxfile host="app.diagrams.net">
+  <diagram id="diagram_1" name="FSM_FSMD">
+    <mxGraphModel dx="1422" dy="794" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1560" pageHeight="960" background="#ffffff">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="p1" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F8FAFC;strokeColor=#475569;strokeWidth=1.4;dashed=1;dashPattern=6 4;arcSize=3;" vertex="1" parent="1">
+          <mxGeometry x="30" y="20" width="1500" height="560" as="geometry" />
+        </mxCell>
+        <mxCell id="p1_t" value="Top-Level modexp.v FSMD (5-State Square-and-Multiply Controller)" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;fontSize=15;fontStyle=1;fontColor=#1E3A5F;fontFamily=Helvetica;" vertex="1" parent="1">
+          <mxGeometry x="55" y="32" width="650" height="28" as="geometry" />
+        </mxCell>
+        <mxCell id="idle" value="&lt;b&gt;S_IDLE (3'd0)&lt;/b&gt;&lt;hr&gt;ready &amp;larr; 0&lt;br&gt;mul_start &amp;larr; 0" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#EFF6FF;strokeColor=#1E3A5F;strokeWidth=1.8;fontSize=12;fontColor=#0F172A;arcSize=16;fontFamily=Helvetica;" vertex="1" parent="1">
+          <mxGeometry x="65" y="195" width="200" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="sq_start" value="&lt;b&gt;S_SQ_START (3'd1)&lt;/b&gt;&lt;hr&gt;mul_A &amp;larr; res, mul_B &amp;larr; res&lt;br&gt;mul_start &amp;larr; 1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFBEB;strokeColor=#B45309;strokeWidth=1.8;fontSize=12;fontColor=#0F172A;arcSize=16;fontFamily=Helvetica;" vertex="1" parent="1">
+          <mxGeometry x="435" y="195" width="230" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="sq_wait" value="&lt;b&gt;S_SQ_WAIT (3'd2)&lt;/b&gt;&lt;hr&gt;Wait mul_done&lt;br&gt;if (mul_done): res &amp;larr; mul_res" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFBEB;strokeColor=#B45309;strokeWidth=1.8;fontSize=12;fontColor=#0F172A;arcSize=16;fontFamily=Helvetica;" vertex="1" parent="1">
+          <mxGeometry x="845" y="195" width="230" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="mul_wait" value="&lt;b&gt;S_MUL_WAIT (3'd3)&lt;/b&gt;&lt;hr&gt;Wait mul_done&lt;br&gt;if (mul_done): res &amp;larr; mul_res" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFF1F2;strokeColor=#9F1239;strokeWidth=1.8;fontSize=12;fontColor=#0F172A;arcSize=16;fontFamily=Helvetica;" vertex="1" parent="1">
+          <mxGeometry x="640" y="395" width="230" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="done" value="&lt;b&gt;S_DONE (3'd4)&lt;/b&gt;&lt;hr&gt;ready &amp;larr; 0 (next cycle)&lt;br&gt;modexp_out valid" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F0FDFA;strokeColor=#0F766E;strokeWidth=1.8;fontSize=12;fontColor=#0F172A;arcSize=16;fontFamily=Helvetica;" vertex="1" parent="1">
+          <mxGeometry x="1275" y="395" width="215" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="t1" value="start == 1 /&lt;br&gt;res &amp;larr; 1, exp_cnt &amp;larr; N-1&lt;br&gt;base &amp;larr; inp mod P" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#1E293B;strokeWidth=1.6;endArrow=block;endFill=1;fontSize=11;fontColor=#0F172A;labelBackgroundColor=#FFFFFF;fontFamily=Helvetica;" edge="1" parent="1" source="idle" target="sq_start">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="t2" value="unconditional&lt;br&gt;(1 cycle)" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#1E293B;strokeWidth=1.6;endArrow=block;endFill=1;fontSize=11;fontColor=#0F172A;labelBackgroundColor=#FFFFFF;fontFamily=Helvetica;" edge="1" parent="1" source="sq_start" target="sq_wait">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="t3" value="mul_done &amp;amp;&amp;amp; !exp_shift[N-1] &amp;amp;&amp;amp; exp_cnt &amp;gt; 0 / exp_shift &amp;lt;&amp;lt;= 1, exp_cnt--" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#1E293B;strokeWidth=1.6;endArrow=block;endFill=1;fontSize=11;fontColor=#0F172A;labelBackgroundColor=#FFFFFF;fontFamily=Helvetica;" edge="1" parent="1" source="sq_wait" target="sq_start">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="960" y="115" />
+              <mxPoint x="550" y="115" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="t4" value="mul_done &amp;amp;&amp;amp; exp_shift[N-1] /&lt;br&gt;mul_A &amp;larr; mul_res, mul_B &amp;larr; base, mul_start &amp;larr; 1" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#1E293B;strokeWidth=1.6;endArrow=block;endFill=1;fontSize=11;fontColor=#0F172A;labelBackgroundColor=#FFFFFF;fontFamily=Helvetica;" edge="1" parent="1" source="sq_wait" target="mul_wait">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="960" y="445" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="t5" value="mul_done &amp;amp;&amp;amp; exp_cnt &amp;gt; 0 /&lt;br&gt;exp_shift &amp;lt;&amp;lt;= 1, exp_cnt--" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#1E293B;strokeWidth=1.6;endArrow=block;endFill=1;fontSize=11;fontColor=#0F172A;labelBackgroundColor=#FFFFFF;fontFamily=Helvetica;" edge="1" parent="1" source="mul_wait" target="sq_start">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="550" y="445" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="t6" value="mul_done &amp;amp;&amp;amp; !exp_shift[N-1] &amp;amp;&amp;amp; exp_cnt == 0 /&lt;br&gt;modexp_out &amp;larr; mul_res, ready &amp;larr; 1" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#1E293B;strokeWidth=1.6;endArrow=block;endFill=1;fontSize=11;fontColor=#0F172A;labelBackgroundColor=#FFFFFF;fontFamily=Helvetica;" edge="1" parent="1" source="sq_wait" target="done">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1382" y="245" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="t7" value="mul_done &amp;amp;&amp;amp; exp_cnt == 0 / modexp_out &amp;larr; mul_res, ready &amp;larr; 1" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#1E293B;strokeWidth=1.6;endArrow=block;endFill=1;fontSize=11;fontColor=#0F172A;labelBackgroundColor=#FFFFFF;fontFamily=Helvetica;" edge="1" parent="1" source="mul_wait" target="done">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="755" y="530" />
+              <mxPoint x="1330" y="530" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="t8" value="1 cycle / ready &amp;larr; 0" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#1E293B;strokeWidth=1.6;endArrow=block;endFill=1;fontSize=11;fontColor=#0F172A;labelBackgroundColor=#FFFFFF;fontFamily=Helvetica;" edge="1" parent="1" source="done" target="idle">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1420" y="555" />
+              <mxPoint x="165" y="555" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="p2" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F8FAFC;strokeColor=#475569;strokeWidth=1.4;dashed=1;dashPattern=6 4;arcSize=3;" vertex="1" parent="1">
+          <mxGeometry x="30" y="610" width="1500" height="320" as="geometry" />
+        </mxCell>
+        <mxCell id="p2_t" value="Interleaved Modular Multiplier modmul.v FSMD (2-State Datapath)" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;fontSize=15;fontStyle=1;fontColor=#0F766E;fontFamily=Helvetica;" vertex="1" parent="1">
+          <mxGeometry x="55" y="622" width="650" height="28" as="geometry" />
+        </mxCell>
+        <mxCell id="mm_idle" value="&lt;b&gt;S_IDLE (1'b0)&lt;/b&gt;&lt;hr&gt;done &amp;larr; 0" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#EFF6FF;strokeColor=#1E3A5F;strokeWidth=1.8;fontSize=12;fontColor=#0F172A;arcSize=16;fontFamily=Helvetica;" vertex="1" parent="1">
+          <mxGeometry x="210" y="735" width="220" height="95" as="geometry" />
+        </mxCell>
+        <mxCell id="mm_run" value="&lt;b&gt;S_RUN (1'b1)&lt;/b&gt;&lt;hr&gt;a_reg &amp;larr; a_reg &amp;lt;&amp;lt; 1&lt;br&gt;acc &amp;larr; acc_next" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F0FDFA;strokeColor=#0F766E;strokeWidth=1.8;fontSize=12;fontColor=#0F172A;arcSize=16;fontFamily=Helvetica;" vertex="1" parent="1">
+          <mxGeometry x="930" y="735" width="240" height="95" as="geometry" />
+        </mxCell>
+        <mxCell id="m1" value="mul_start == 1 / a_reg &amp;larr; A, b_reg &amp;larr; B, acc &amp;larr; 0, bit_cnt &amp;larr; N-1" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#1E293B;strokeWidth=1.6;endArrow=block;endFill=1;fontSize=11;fontColor=#0F172A;labelBackgroundColor=#FFFFFF;fontFamily=Helvetica;" edge="1" parent="1" source="mm_idle" target="mm_run">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="320" y="680" />
+              <mxPoint x="1050" y="680" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="m2" value="bit_cnt == 0 / res &amp;larr; acc_next[N-1:0], done &amp;larr; 1" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#1E293B;strokeWidth=1.6;endArrow=block;endFill=1;fontSize=11;fontColor=#0F172A;labelBackgroundColor=#FFFFFF;fontFamily=Helvetica;" edge="1" parent="1" source="mm_run" target="mm_idle">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1050" y="885" />
+              <mxPoint x="320" y="885" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="m3" value="bit_cnt &amp;gt; 0 /&lt;br&gt;bit_cnt &amp;larr; bit_cnt - 1" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#1E293B;strokeWidth=1.6;endArrow=block;endFill=1;fontSize=11;fontColor=#0F172A;labelBackgroundColor=#FFFFFF;fontFamily=Helvetica;" edge="1" parent="1" source="mm_run" target="mm_run">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1260" y="755" />
+              <mxPoint x="1260" y="810" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

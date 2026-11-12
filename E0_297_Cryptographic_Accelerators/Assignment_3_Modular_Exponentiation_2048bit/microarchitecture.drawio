@@ -1,0 +1,197 @@
+﻿<mxfile host="app.diagrams.net" modified="2026-11-12T12:15:00.000Z" agent="Antigravity" version="24.0.0" type="device">
+  <diagram id="microarch" name="RSA-2048 ModExp Microarchitecture">
+    <mxGraphModel dx="1420" dy="850" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1400" pageHeight="820" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <!-- Outer Module Boundary: modexp -->
+        <mxCell id="modexp_box" value="modexp #(N = 2048)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F8FAFC;strokeColor=#334155;strokeWidth=2;dashed=1;verticalAlign=top;align=left;spacingLeft=14;spacingTop=8;fontStyle=1;fontSize=15;fontColor=#0F172A;" vertex="1" parent="1">
+          <mxGeometry x="80" y="30" width="1240" height="750" as="geometry" />
+        </mxCell>
+
+        <!-- Primary Inputs -->
+        <mxCell id="in_inp" value="inp[2047:0]" style="text;html=1;align=right;verticalAlign=middle;fontStyle=1;fontSize=12;fontColor=#1E293B;" vertex="1" parent="1">
+          <mxGeometry x="0" y="120" width="80" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="in_exp" value="exp[2047:0]" style="text;html=1;align=right;verticalAlign=middle;fontStyle=1;fontSize=12;fontColor=#1E293B;" vertex="1" parent="1">
+          <mxGeometry x="0" y="210" width="80" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="in_ctrl" value="write, start&#xa;reset (sync, low)&#xa;clock" style="text;html=1;align=right;verticalAlign=middle;fontStyle=1;fontSize=11;fontColor=#1E293B;" vertex="1" parent="1">
+          <mxGeometry x="-10" y="540" width="90" height="60" as="geometry" />
+        </mxCell>
+
+        <!-- Input Registers -->
+        <mxCell id="reg_inp" value="&lt;b&gt;inp_reg&lt;/b&gt;&lt;br&gt;[2047:0]&lt;br&gt;&lt;font style=&quot;font-size:10px&quot;&gt;(DFF, en=write)&lt;/font&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#DBEAFE;strokeColor=#1D4ED8;strokeWidth=1.5;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="130" y="100" width="130" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="reg_exp" value="&lt;b&gt;exp_reg&lt;/b&gt;&lt;br&gt;[2047:0]&lt;br&gt;&lt;font style=&quot;font-size:10px&quot;&gt;(DFF, en=write)&lt;/font&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#DBEAFE;strokeColor=#1D4ED8;strokeWidth=1.5;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="130" y="195" width="130" height="70" as="geometry" />
+        </mxCell>
+
+        <!-- Pre-Reduction Unit -->
+        <mxCell id="pre_red" value="&lt;b&gt;Mod-P Pre-Reduction&lt;/b&gt;&lt;br&gt;inp_reg &amp;ge; P ? (inp_reg - P) : inp_reg&lt;br&gt;&lt;font style=&quot;font-size:10px&quot;&gt;P[2047:0] (RSA-2048 localparam)&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E0E7FF;strokeColor=#4338CA;strokeWidth=1.5;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="310" y="95" width="210" height="80" as="geometry" />
+        </mxCell>
+
+        <!-- base & exp_shift Registers -->
+        <mxCell id="reg_base" value="&lt;b&gt;base&lt;/b&gt; [2047:0]&lt;br&gt;&lt;font style=&quot;font-size:10px&quot;&gt;(DFF, en=start)&lt;/font&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#DBEAFE;strokeColor=#1D4ED8;strokeWidth=1.5;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="570" y="100" width="120" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="reg_exp_shift" value="&lt;b&gt;exp_shift&lt;/b&gt; [2047:0]&lt;br&gt;&lt;font style=&quot;font-size:10px&quot;&gt;(Shift-Left Reg)&lt;/font&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#DBEAFE;strokeColor=#1D4ED8;strokeWidth=1.5;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="310" y="200" width="150" height="60" as="geometry" />
+        </mxCell>
+
+        <!-- Result Register -->
+        <mxCell id="reg_res" value="&lt;b&gt;res&lt;/b&gt; [2047:0]&lt;br&gt;&lt;font style=&quot;font-size:10px&quot;&gt;(init = 1 on start)&lt;/font&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#DBEAFE;strokeColor=#1D4ED8;strokeWidth=1.5;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="570" y="210" width="120" height="70" as="geometry" />
+        </mxCell>
+
+        <!-- Operand MUX B -->
+        <mxCell id="mux_b" value="MUX&lt;br&gt;B" style="shape=trapezoid;perimeter=trapezoidPerimeter;whiteSpace=wrap;html=1;fixedSize=1;rotation=90;fillColor=#FEF3C7;strokeColor=#D97706;strokeWidth=1.5;fontStyle=1;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="740" y="135" width="90" height="50" as="geometry" />
+        </mxCell>
+
+        <!-- u_modmul Container -->
+        <mxCell id="modmul_box" value="u_modmul : modmul #(N = 2048)  [Interleaved Modular Multiplier - 2048 cycles]" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ECFDF5;strokeColor=#059669;strokeWidth=2;verticalAlign=top;align=left;spacingLeft=12;spacingTop=8;fontStyle=1;fontSize=13;fontColor=#065F46;" vertex="1" parent="1">
+          <mxGeometry x="860" y="90" width="430" height="520" as="geometry" />
+        </mxCell>
+
+        <!-- Inside u_modmul -->
+        <mxCell id="mm_areg" value="&lt;b&gt;a_reg&lt;/b&gt; [2047:0]&lt;br&gt;&lt;font style=&quot;font-size:10px&quot;&gt;Shift-Left (MSB a_reg[2047])&lt;/font&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#D1FAE5;strokeColor=#059669;strokeWidth=1.5;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="890" y="140" width="170" height="55" as="geometry" />
+        </mxCell>
+        <mxCell id="mm_breg" value="&lt;b&gt;b_reg&lt;/b&gt; [2047:0]&lt;br&gt;&lt;font style=&quot;font-size:10px&quot;&gt;Latched Operand B&lt;/font&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#D1FAE5;strokeColor=#059669;strokeWidth=1.5;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="1090" y="140" width="170" height="55" as="geometry" />
+        </mxCell>
+        <mxCell id="mm_and" value="a_reg[2047] ? b_reg : 0&lt;br&gt;&lt;font style=&quot;font-size:10px&quot;&gt;add_term [2049:0]&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FEF9C3;strokeColor=#CA8A04;strokeWidth=1.5;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="990" y="225" width="180" height="45" as="geometry" />
+        </mxCell>
+        <mxCell id="mm_acc" value="&lt;b&gt;acc&lt;/b&gt; [2049:0]&lt;br&gt;&lt;font style=&quot;font-size:10px&quot;&gt;2050-bit Accumulator&lt;/font&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#D1FAE5;strokeColor=#059669;strokeWidth=1.5;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="890" y="300" width="150" height="55" as="geometry" />
+        </mxCell>
+        <mxCell id="mm_add" value="&lt;b&gt;2&amp;middot;acc + add_term&lt;/b&gt;&lt;br&gt;acc_shifted [2049:0]" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FEF9C3;strokeColor=#CA8A04;strokeWidth=1.5;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="1075" y="300" width="185" height="55" as="geometry" />
+        </mxCell>
+        <mxCell id="mm_red" value="&lt;b&gt;Combinational Mod-P Reduction&lt;/b&gt;&lt;br&gt;if (&amp;ge; 2P) sub 2P; else if (&amp;ge; P) sub P&lt;br&gt;&lt;font style=&quot;font-size:10px&quot;&gt;P_ext[2049:0], P2_ext[2049:0] &amp;rarr; acc_next[2049:0]&lt;/font&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#DCFCE7;strokeColor=#15803D;strokeWidth=1.5;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="890" y="385" width="370" height="65" as="geometry" />
+        </mxCell>
+        <mxCell id="mm_ctrl" value="&lt;b&gt;modmul FSM &amp;amp; bit_cnt[11:0]&lt;/b&gt;&lt;br&gt;Counts 2047 &amp;rarr; 0 (2048 cycles)&lt;br&gt;Asserts &lt;b&gt;mul_done&lt;/b&gt; (1 cycle)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFEDD5;strokeColor=#EA580C;strokeWidth=1.5;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="890" y="475" width="210" height="65" as="geometry" />
+        </mxCell>
+        <mxCell id="mm_res" value="&lt;b&gt;mul_res&lt;/b&gt; [2047:0]&lt;br&gt;&lt;font style=&quot;font-size:10px&quot;&gt;(Output Reg)&lt;/font&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#D1FAE5;strokeColor=#059669;strokeWidth=1.5;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="1125" y="480" width="135" height="55" as="geometry" />
+        </mxCell>
+
+        <!-- ModExp Control FSM -->
+        <mxCell id="fsm_box" value="&lt;b&gt;ModExp Control FSM &amp;amp; exp_cnt[11:0]&lt;/b&gt;&lt;br&gt;States: S_IDLE, S_SQ_START, S_SQ_WAIT, S_MUL_WAIT, S_DONE&lt;br&gt;Drives: mul_start, operand MUX select (res vs base), ready" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFEDD5;strokeColor=#C2410C;strokeWidth=2;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="140" y="490" width="460" height="90" as="geometry" />
+        </mxCell>
+
+        <!-- Primary Output Registers -->
+        <mxCell id="out_reg" value="&lt;b&gt;modexp_out&lt;/b&gt; [2047:0]&lt;br&gt;&lt;b&gt;ready&lt;/b&gt; (1-cycle pulse)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#E2E8F0;strokeColor=#334155;strokeWidth=1.5;fontSize=12;" vertex="1" parent="1">
+          <mxGeometry x="1080" y="660" width="180" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="out_port" value="modexp_out[2047:0]&#xa;ready" style="text;html=1;align=left;verticalAlign=middle;fontStyle=1;fontSize=12;fontColor=#1E293B;" vertex="1" parent="1">
+          <mxGeometry x="1330" y="675" width="130" height="40" as="geometry" />
+        </mxCell>
+
+        <!-- Edges -->
+        <mxCell id="e1" value="2048b" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeWidth=1.5;fontSize=10;" edge="1" parent="1" source="in_inp" target="reg_inp">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e2" value="2048b" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeWidth=1.5;fontSize=10;" edge="1" parent="1" source="in_exp" target="reg_exp">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e3" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeWidth=1.5;" edge="1" parent="1" source="reg_inp" target="pre_red">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e4" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeWidth=1.5;" edge="1" parent="1" source="pre_red" target="reg_base">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e5" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeWidth=1.5;" edge="1" parent="1" source="reg_exp" target="reg_exp_shift">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e6" value="base" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeWidth=1.5;fontSize=10;" edge="1" parent="1" source="reg_base" target="mux_b">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e7" value="res" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeWidth=1.5;fontSize=10;" edge="1" parent="1" source="reg_res" target="mux_b">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e8" value="mul_A [2047:0]" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeWidth=1.5;fontSize=10;" edge="1" parent="1" source="reg_res" target="mm_areg">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="630" y="300" />
+              <mxPoint x="840" y="300" />
+              <mxPoint x="840" y="168" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e9" value="mul_B" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeWidth=1.5;fontSize=10;" edge="1" parent="1" source="mux_b" target="mm_breg">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="830" y="160" />
+              <mxPoint x="830" y="120" />
+              <mxPoint x="1175" y="120" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e10" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeWidth=1.5;" edge="1" parent="1" source="mm_areg" target="mm_and">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e11" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeWidth=1.5;" edge="1" parent="1" source="mm_breg" target="mm_and">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e12" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeWidth=1.5;" edge="1" parent="1" source="mm_and" target="mm_add">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e13" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeWidth=1.5;" edge="1" parent="1" source="mm_acc" target="mm_add">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e14" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeWidth=1.5;" edge="1" parent="1" source="mm_add" target="mm_red">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e15" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeWidth=1.5;" edge="1" parent="1" source="mm_red" target="mm_acc">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="875" y="418" />
+              <mxPoint x="875" y="328" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e16" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeWidth=1.5;" edge="1" parent="1" source="mm_red" target="mm_res">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e17" value="mul_res [2047:0]" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeWidth=1.5;fontSize=10;" edge="1" parent="1" source="mm_res" target="out_reg">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e18" value="mul_res feedback [2047:0]" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeWidth=1.5;fontSize=10;strokeColor=#059669;" edge="1" parent="1" source="mm_res" target="reg_res">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1192" y="570" />
+              <mxPoint x="630" y="570" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e19" value="exp_shift[2047]" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeWidth=1.5;dashed=1;strokeColor=#C2410C;fontSize=10;" edge="1" parent="1" source="reg_exp_shift" target="fsm_box">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e20" value="mul_start / mul_done" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeWidth=1.5;dashed=1;strokeColor=#C2410C;fontSize=10;" edge="1" parent="1" source="fsm_box" target="mm_ctrl">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e21" value="ready" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeWidth=1.5;dashed=1;strokeColor=#C2410C;fontSize=10;" edge="1" parent="1" source="fsm_box" target="out_reg">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="370" y="695" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e22" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeWidth=1.5;" edge="1" parent="1" source="out_reg" target="out_port">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e23" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;strokeWidth=1.5;dashed=1;" edge="1" parent="1" source="in_ctrl" target="fsm_box">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
