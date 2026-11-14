@@ -234,88 +234,116 @@ The testbench \texttt{rv32i\_pipeline\_tb} runs 500 clock cycles at 100~MHz, cou
 \end{figure}
 
 \subsection*{Post-route timing simulation (with SDF back-annotation)}
-The same program was run on the post-implementation netlist with the SDF file written by Vivado (\textit{Run Simulation $\rightarrow$ Run Post-Implementation Timing Simulation}), using the top-level testbench \texttt{basys3\_top\_tb}: reset is released after 100~ns (GSR), the program runs for 5,000~ns, then \texttt{sw}$=$\texttt{00} selects the quotient and \texttt{sw}$=$\texttt{01} the remainder on the LEDs.
+The same program was run on the post-implementation netlist of the timing-met run \texttt{impl\_3} (Section~\ref{sec:timing}) with the SDF file written by Vivado (\textit{Run Simulation $\rightarrow$ Run Post-Implementation Timing Simulation}), using the top-level testbench \texttt{basys3\_top\_tb}: reset is released after 100~ns (GSR), the program runs for 5,000~ns, then \texttt{sw}$=$\texttt{00} selects the quotient and \texttt{sw}$=$\texttt{01} the remainder on the LEDs.
 
 \begin{figure}[htbp]
 \centering
-\includegraphics[width=\textwidth]{figures/fig_console_postroute.png}
+\includegraphics[width=\textwidth]{figures/fig_console_postroute_met.png}
 \caption{Post-route timing simulation log: \texttt{sw}$=$\texttt{00} gives \texttt{led} $=$ \texttt{0x000e} (14), \texttt{sw}$=$\texttt{01} gives \texttt{led} $=$ \texttt{0x0002} (2); ``PASS: basys3\_top verified''; simulation ends at 5,140~ns.}
 \label{fig:consolepost}
 \end{figure}
 
 \begin{figure}[htbp]
 \centering
-\includegraphics[width=\textwidth]{figures/fig_wave_postroute_full.png}
-\caption{Post-route timing simulation, full run (0--5,140~ns). \texttt{led} (shown in hex above, in decimal below) changes from 0 to \texttt{0x000e} once the program has stored the quotient (about 2.7~\textmu s) while \texttt{sw}$=$\texttt{00}.}
+\includegraphics[width=\textwidth]{figures/fig_wave_postroute_full_met.png}
+\caption{Post-route timing simulation, full run (0--5,140~ns). \texttt{led} changes from \texttt{0000} to \texttt{000e} (14) once the program has stored the quotient (about 2.7~\textmu s) while \texttt{sw}$=$\texttt{00}; \texttt{seg} changes from \texttt{40} to \texttt{06}.}
 \label{fig:postfull}
 \end{figure}
 
 \begin{figure}[htbp]
 \centering
-\includegraphics[width=\textwidth]{figures/fig_wave_postroute_result.png}
+\includegraphics[width=\textwidth]{figures/fig_wave_postroute_result_met.png}
 \caption{Post-route timing simulation, 5,000--5,140~ns. At about 5,120~ns \texttt{sw} changes from \texttt{00} to \texttt{01}; \texttt{led} changes from \texttt{0x000e} (14) to \texttt{0x0002} (2) after a short unknown interval caused by the back-annotated gate and routing delays, and \texttt{seg} changes from \texttt{06} to \texttt{24}.}
 \label{fig:postresult}
 \end{figure}
 
-\section{Vivado 2026.1 Post-Route Timing \& Resource Utilization}
-The complete design (\texttt{basys3\_top.v}) was synthesized, placed, routed, and verified with post-implementation timing simulation in \textbf{Vivado 2026.1} for \texttt{xc7a35tcpg236-1} with a 100~MHz (\texttt{10.000~ns}) clock constraint.
+\section{Vivado 2026.1 Post-Route Timing \& Resource Utilization}\label{sec:timing}
+The complete design (\texttt{basys3\_top.v}) was synthesized, placed, routed, and verified with post-implementation timing simulation in \textbf{Vivado 2026.1} for \texttt{xc7a35tcpg236-1} with a 100~MHz (\texttt{10.000~ns}) clock constraint. Three implementation runs were made on the \emph{same RTL and the same constraint file}; only the Vivado implementation strategy differed (Table~\ref{tab:runs}, Figure~\ref{fig:runs}). The results below are for the run that meets timing, \texttt{impl\_3} (\texttt{Performance\_ExplorePostRoutePhysOpt}).
 
 \begin{table}[htbp]
 \centering
-\caption{Post-Route Resource Utilization and Timing Summary (\texttt{xc7a35tcpg236-1})}
+\caption{Implementation runs on the unchanged RTL and constraints (10~ns clock)}
+\label{tab:runs}
+\begin{tabular}{@{}llrrrl@{}}
+\toprule
+\textbf{Run} & \textbf{Strategy} & \textbf{WNS (ns)} & \textbf{TNS (ns)} & \textbf{WHS (ns)} & \textbf{Result} \\ \midrule
+\texttt{impl\_1} & Vivado Implementation Defaults & $-0.596$ & $-74.959$ & $+0.128$ & not met \\
+\texttt{impl\_2} & Performance\_Explore & $-0.052$ & $-0.069$ & $+0.128$ & not met \\
+\texttt{impl\_3} & Performance\_ExplorePostRoutePhysOpt & $+0.018$ & $0.000$ & $+0.126$ & \textbf{met} \\ \bottomrule
+\end{tabular}
+\end{table}
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=\textwidth]{figures/fig_design_runs_strategies.png}
+\caption{Vivado Design Runs window just after \texttt{impl\_3} finished: the default run (\texttt{impl\_1}) fails by 0.596~ns, \texttt{impl\_2} by 0.052~ns, and \texttt{impl\_3} meets timing with $\text{WNS}=+0.018$~ns.}
+\label{fig:runs}
+\end{figure}
+
+\begin{table}[htbp]
+\centering
+\caption{Post-Route Resource Utilization and Timing Summary (\texttt{xc7a35tcpg236-1}, run \texttt{impl\_3})}
 \resizebox{\textwidth}{!}{%
 \begin{tabular}{@{}lrrr@{}}
 \toprule
 \textbf{Resource / Timing Metric} & \textbf{Used / Value} & \textbf{Available / Target} & \textbf{Utilization / Margin} \\ \midrule
-Slice LUTs (Total) & 2,955 & 20,800 & 14.21\% \\
-\quad LUT as Logic & 2,699 & 20,800 & 12.98\% \\
+Slice LUTs (Total) & 2,958 & 20,800 & 14.22\% \\
+\quad LUT as Logic & 2,702 & 20,800 & 12.99\% \\
 \quad LUT as Distributed RAM (\texttt{data\_mem}) & 256 & 9,600 & 2.67\% \\
 Slice Registers (Flip-Flops) & 4,165 & 41,600 & 10.01\% \\
 Block RAM (\texttt{RAMB18E1} for \texttt{instr\_bram}) & 0.5 Tile (1 RAMB18) & 50 Tiles & 1.00\% \\
 DSPs & 0 & 90 & 0.00\% \\ \midrule
-Worst Negative Slack (WNS @ 100~MHz) & $-0.596\text{ ns}$ & $10.000\text{ ns}$ & $F_{\max} \approx 94.37\text{ MHz}$ \\
-Worst Hold Slack (WHS) & $+0.128\text{ ns}$ & $0.000\text{ ns}$ & 0 hold violations \\
-Worst Pulse Width Slack (WPWS) & $+3.750\text{ ns}$ & $0.000\text{ ns}$ & 0 pulse-width violations \\ \bottomrule
+Worst Negative Slack (WNS @ 100~MHz) & $+0.018\text{ ns}$ & $10.000\text{ ns}$ & timing met, 0 failing endpoints of 11,164 \\
+Worst Hold Slack (WHS) & $+0.126\text{ ns}$ & $0.000\text{ ns}$ & 0 hold violations \\
+Worst Pulse Width Slack (WPWS) & $+3.750\text{ ns}$ & $0.000\text{ ns}$ & 0 pulse-width violations \\
+Total on-chip power & 0.110~W & --- & 0.038~W dynamic, 0.072~W static \\ \bottomrule
 \end{tabular}%
 }
 \end{table}
 
 \begin{figure}[htbp]
 \centering
-\includegraphics[width=0.9\textwidth]{figures/fig_util.png}
-\caption{Vivado post-route utilization summary: 2,955 LUTs (14.21\%), 256 LUTRAM (2.67\%), 4,165 flip-flops (10.01\%), 0.5 BRAM tile (1.00\%), 32 I/O (30.19\%).}
+\includegraphics[width=0.9\textwidth]{figures/fig_util_impl3.png}
+\caption{Vivado post-route utilization summary (\texttt{impl\_3}): 2,958 LUTs (14.22\%), 256 LUTRAM (2.67\%), 4,165 flip-flops (10.01\%), 0.5 BRAM tile (1.00\%), 32 I/O (30.19\%).}
 \label{fig:util}
 \end{figure}
 
 \begin{figure}[htbp]
 \centering
-\includegraphics[width=\textwidth]{figures/fig_util_hier.png}
-\caption{Post-route utilization by hierarchy: \texttt{u\_cpu} accounts for 2,952 of the 2,955 LUTs and 4,147 of the 4,165 registers.}
+\includegraphics[width=\textwidth]{figures/fig_util_hier_impl3.png}
+\caption{Post-route utilization by hierarchy (\texttt{impl\_3}): \texttt{u\_cpu} accounts for 2,955 of the 2,958 LUTs and 4,147 of the 4,165 registers.}
 \label{fig:utilhier}
 \end{figure}
 
-\subsection*{Timing analysis}
+\subsection*{Timing analysis and closure}
 \begin{figure}[htbp]
 \centering
-\includegraphics[width=\textwidth]{figures/fig_timing_summary.png}
-\caption{Vivado Design Timing Summary at the 10~ns (100~MHz) constraint: WNS $=-0.596$~ns, TNS $=-74.959$~ns with 311 failing setup endpoints out of 11,164; WHS $=+0.128$~ns (0 failing); WPWS $=3.750$~ns. Vivado reports ``Timing constraints are not met''.}
+\includegraphics[width=\textwidth]{figures/fig_timing_summary_met.png}
+\caption{Vivado Design Timing Summary for \texttt{impl\_3} at the 10~ns (100~MHz) constraint: WNS $=+0.018$~ns, TNS $=0$ with no failing endpoints out of 11,164; WHS $=+0.126$~ns; WPWS $=3.750$~ns. Vivado reports ``All user specified timing constraints are met.''}
 \label{fig:timing}
 \end{figure}
 
 \begin{figure}[htbp]
 \centering
+\includegraphics[width=\textwidth]{figures/fig_critical_path_summary_met.png}
+\caption{The ten worst setup paths of \texttt{impl\_3} (slack $+0.018$ to $+0.105$~ns). Path~1 runs from \texttt{u\_cpu/ex\_mem\_reg\_write\_reg} to the reset pin of \texttt{u\_cpu/id\_ex\_rs2\_reg[4]}: 12 logic levels, fanout 190, data-path delay 9.379~ns.}
+\label{fig:critpathmet}
+\end{figure}
+
+\textbf{What changed between the runs.} The RTL and constraints are identical in all three runs. The default strategy (\texttt{impl\_1}) misses the 10~ns constraint by 0.596~ns (maximum frequency about 94.4~MHz). \texttt{Performance\_Explore} places and routes more aggressively and reduces the miss to 0.052~ns. \texttt{Performance\_ExplorePostRoutePhysOpt} adds a physical-optimization pass after routing and closes the remaining gap. The cost is three extra LUTs (2,958 instead of 2,955).
+
+\textbf{Where the critical path is.} In the default run the worst path (Figure~\ref{fig:critpath}) starts at the write-back register \texttt{mem\_wb\_rd}, passes through the forwarding select logic into \texttt{ex\_op\_a\_fwd}, then through the branch comparator's carry chain (\texttt{u\_branch}) to \texttt{ex\_branch\_cond}, \texttt{ex\_redirect} and the load-use/stall logic, and finally fans out (fanout 190) to the synchronous reset of the ID/EX pipeline registers: the \emph{forward $\rightarrow$ compare $\rightarrow$ redirect $\rightarrow$ flush} chain in the EX stage. The worst path of \texttt{impl\_3} is the same chain (it ends at \texttt{id\_ex\_rs2\_reg[4]/R}), with 76\% of its delay in routing (7.135~ns of 9.379~ns).
+
+\begin{figure}[htbp]
+\centering
 \includegraphics[width=\textwidth]{figures/fig_critical_path_detail.png}
-\caption{Worst setup path (Slow process corner): from \texttt{u\_cpu/mem\_wb\_rd\_reg[4]} to the reset pin of \texttt{u\_cpu/id\_ex\_pc\_plus4\_reg[15]}. Data-path delay 10.103~ns, of which logic 2.394~ns (23.7\%) and routing 7.709~ns (76.3\%); 12 logic levels (CARRY4 $\times$3, LUT3 $\times$1, LUT4 $\times$3, LUT6 $\times$5).}
+\caption{Worst setup path of the default-strategy run (\texttt{impl\_1}, Slow process corner): from \texttt{u\_cpu/mem\_wb\_rd\_reg[4]} to the reset pin of \texttt{u\_cpu/id\_ex\_pc\_plus4\_reg[15]}. Data-path delay 10.103~ns, of which logic 2.394~ns (23.7\%) and routing 7.709~ns (76.3\%); 12 logic levels (CARRY4 $\times$3, LUT3 $\times$1, LUT4 $\times$3, LUT6 $\times$5).}
 \label{fig:critpath}
 \end{figure}
 
-The design does \textbf{not} meet the 100~MHz constraint: the worst setup slack is $-0.596$~ns, so the maximum frequency supported by static timing analysis is about $1/(10.000+0.596)~\text{ns} \approx 94.4$~MHz. Hold and pulse-width checks pass.
+\textbf{Limits of this result.} Timing is met, but only just: the ten worst paths have slack between $+0.018$ and $+0.105$~ns, so there is little margin, and a different tool version or random seed could change the outcome. The RTL itself was not optimised; ways to gain margin that were \emph{not} implemented here are to register part of the redirect decision or to reduce the fanout of the ID/EX flush signal (replicate it or use clock enables).
 
-The worst path (Figure~\ref{fig:critpath} and the full path in \texttt{reports/rebuild/post\_route\_timing.rpt}) starts at the write-back register \texttt{mem\_wb\_rd}, passes through the forwarding select logic into \texttt{ex\_op\_a\_fwd}, then through the branch comparator's carry chain (\texttt{u\_branch}) to \texttt{ex\_branch\_cond}, \texttt{ex\_redirect} and the load-use/stall logic, and finally fans out (fanout 190) to the synchronous reset of the ID/EX pipeline registers. In other words it is the \emph{forward $\rightarrow$ compare $\rightarrow$ redirect $\rightarrow$ flush} chain inside the EX stage, and 76\% of its delay is routing rather than logic.
-
-Ways to shorten it, which were not implemented in this submission, would be to register part of the redirect decision, reduce the fanout of the ID/EX flush signal (replicate it or use clock enables), or simply constrain the clock to about 10.6~ns (94~MHz).
-
-The post-route timing simulation in the previous section passes at the 10~ns clock. That does not contradict the failing slack: the simulation only exercises the paths this particular program sensitises, whereas static timing analysis checks every path at the slow process corner. The correct statement of the achieved performance is therefore the static-timing result above, not 100~MHz.
+\textbf{Relation to the simulation.} The post-route timing simulation in the previous section was run on \texttt{impl\_3} and passes at the 10~ns clock. A simulation only exercises the paths that this particular program sensitises, whereas static timing analysis checks every path at the slow process corner, so the static-timing result above is the one that supports the 100~MHz claim.
 
 \appendix
 \section{C code}
