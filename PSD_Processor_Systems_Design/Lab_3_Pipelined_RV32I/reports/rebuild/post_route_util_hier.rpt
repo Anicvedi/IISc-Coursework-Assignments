@@ -1,0 +1,35 @@
+Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2026 Advanced Micro Devices, Inc. All Rights Reserved.
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+| Tool Version : Vivado v.2026.1 (win64) Build 6511674 Tue Jun 16 11:02:23 MDT 2026
+| Date         : Sat Nov 14 11:27:55 2026
+| Host         : LAPTOP-B0MBBP7J running 64-bit major release  (build 9200)
+| Command      : report_utilization -hierarchical -file C:/Users/Anirudh/IISc-Coursework-Assignments/PSD_Processor_Systems_Design/Lab_3_Pipelined_RV32I/reports/rebuild/post_route_util_hier.rpt
+| Design       : basys3_top
+| Device       : xc7a35tcpg236-1
+| Speed File   : -1
+| Design State : Routed
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+Utilization Design Information
+
+Table of Contents
+-----------------
+1. Utilization by Hierarchy
+
+1. Utilization by Hierarchy
+---------------------------
+
++----------------+--------------------+------------+------------+---------+------+------+--------+--------+------------+
+|    Instance    |       Module       | Total LUTs | Logic LUTs | LUTRAMs | SRLs |  FFs | RAMB36 | RAMB18 | DSP Blocks |
++----------------+--------------------+------------+------------+---------+------+------+--------+--------+------------+
+| basys3_top     |              (top) |       2955 |       2699 |     256 |    0 | 4165 |      0 |      1 |          0 |
+|   (basys3_top) |              (top) |          0 |          0 |       0 |    0 |    0 |      0 |      0 |          0 |
+|   u_cpu        | rv32i_pipeline_cpu |       2952 |       2696 |     256 |    0 | 4147 |      0 |      1 |          0 |
+|     (u_cpu)    | rv32i_pipeline_cpu |        923 |        923 |       0 |    0 |  644 |      0 |      0 |          0 |
+|     u_data_mem |           data_mem |        386 |        130 |     256 |    0 |   32 |      0 |      0 |          0 |
+|     u_icache   |             icache |        971 |        971 |       0 |    0 | 2479 |      0 |      0 |          0 |
+|     u_reg_file |           reg_file |        673 |        673 |       0 |    0 |  992 |      0 |      0 |          0 |
++----------------+--------------------+------------+------------+---------+------+------+--------+--------+------------+
+* Note: The sum of lower-level cells may be larger than their parent cells total, due to cross-hierarchy LUT combining
+
+
