@@ -1,0 +1,41 @@
+Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2026 Advanced Micro Devices, Inc. All Rights Reserved.
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+| Tool Version : Vivado v.2026.1 (win64) Build 6511674 Tue Jun 16 11:02:23 MDT 2026
+| Date         : Sat Nov 14 12:36:37 2026
+| Host         : LAPTOP-B0MBBP7J running 64-bit major release  (build 9200)
+| Command      : report_drc -file C:/Users/Anirudh/IISc-Coursework-Assignments/PSD_Processor_Systems_Design/Lab_3_Pipelined_RV32I/reports/impl3_met/post_route_drc.rpt
+| Design       : basys3_top
+| Device       : xc7a35tcpg236-1
+| Speed File   : -1
+| Design State : Fully Routed
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+Report DRC
+
+Table of Contents
+-----------------
+1. REPORT SUMMARY
+2. REPORT DETAILS
+
+1. REPORT SUMMARY
+-----------------
+            Netlist: netlist
+          Floorplan: checkpoint_basys3_top_postroute_physopt
+      Design limits: <entire design considered>
+           Ruledeck: default
+             Max checks: <unlimited>
+             Checks found: 1
++-------------+----------+---------------------------------+--------+
+| Rule        | Severity | Description                     | Checks |
++-------------+----------+---------------------------------+--------+
+| PLBUFGOPT-1 | Warning  | Non-Optimal connections to BUFG | 1      |
++-------------+----------+---------------------------------+--------+
+
+2. REPORT DETAILS
+-----------------
+PLBUFGOPT-1#1 Warning
+Non-Optimal connections to BUFG  
+A non-muxed BUFG clk_IBUF_BUFG_inst is driven by another global buffer clk_IBUF_BUFG_inst_replica. Remove non-muxed BUFG if it is not desired
+Related violations: <none>
+
+
