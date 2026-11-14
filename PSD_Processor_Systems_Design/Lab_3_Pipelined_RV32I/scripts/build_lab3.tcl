@@ -37,6 +37,12 @@ launch_runs synth_1 -jobs 4
 wait_on_run synth_1
 if {[get_property PROGRESS [get_runs synth_1]] ne "100%"} { error "synth_1 failed" }
 
+# The default implementation strategy misses the 10 ns clock by 0.596 ns.
+# Performance_ExplorePostRoutePhysOpt met timing (WNS +0.018 ns) on the same
+# RTL and constraints in the run documented in doc/Lab3_Report_v2.pdf (impl_3).
+# Note: a rebuild with this setting has not been re-verified; check the WNS
+# printed at the end of this script.
+set_property STRATEGY Performance_ExplorePostRoutePhysOpt [get_runs impl_1]
 launch_runs impl_1 -jobs 4
 wait_on_run impl_1
 if {[get_property PROGRESS [get_runs impl_1]] ne "100%"} { error "impl_1 failed" }
